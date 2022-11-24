@@ -1,0 +1,43 @@
+DROP TABLE IF EXISTS dbo.DailySales
+	
+CREATE TABLE dbo.DailySales (
+	Id INT IDENTITY(1, 1) NOT NULL
+	,StoreId VARCHAR(10)
+	,DATE VARCHAR(50)
+	,Amount DECIMAL(32,2)
+	);
+
+
+INSERT INTO dbo.DailySales VALUES (1, CAST('2019-07-20' AS DATE), 455.34);
+INSERT INTO dbo.DailySales VALUES (1, CAST('2019-07-21' AS DATE), 322.67);
+INSERT INTO dbo.DailySales VALUES (1, CAST('2019-07-22' AS DATE), 120.45);
+INSERT INTO dbo.DailySales VALUES (4, CAST('2019-07-20' AS DATE), 567.92);
+INSERT INTO dbo.DailySales VALUES (4, CAST('2019-07-21' AS DATE), 890.23);
+INSERT INTO dbo.DailySales VALUES (4, CAST('2019-07-22' AS DATE), 679.34);
+INSERT INTO dbo.DailySales VALUES (2, CAST('2019-07-20' AS DATE), 569.54);
+INSERT INTO dbo.DailySales VALUES (2, CAST('2019-07-23' AS DATE), 890.55);
+INSERT INTO dbo.DailySales VALUES (2, CAST('2019-07-24' AS DATE), 968.45);
+INSERT INTO dbo.DailySales VALUES (3, CAST('2019-06-20' AS DATE), 789.56);
+INSERT INTO dbo.DailySales VALUES (3, CAST('2019-06-21' AS DATE), 678.23);
+
+--Method1
+SELECT StoreId 
+	,Date
+	,SUM(Amount) OVER (PARTITION BY StoreId ORDER BY Date) As RunningTotal
+FROM dbo.DailySales
+ORDER BY StoreId, Date
+
+--Method2
+SELECT t1.StoreId
+	,t1.DATE
+	,t1.Amount
+	,SUM(t2.Amount)
+FROM dbo.DailySales t1
+JOIN dbo.DailySales t2
+on t1.StoreId = t2.StoreId
+and t1.DATE >= t2.DATE
+GROUP BY t1.StoreId
+	,t1.DATE
+	,t1.Amount 
+
+
