@@ -1,3 +1,6 @@
+
+
+
 /*
 SQL Server High Precision Date and Time Functions have a scale of 7 and are:
 
@@ -78,3 +81,9 @@ ISDATE – returns int - Returns 1 if a valid datetime type and 0 if not
 */
 SELECT ISDATE(GETDATE()) AS 'IsDate'; 
 SELECT ISDATE(NULL) AS 'IsDate';
+
+/*
+CONVERT – returns int - Returns 1 if a valid datetime type and 0 if not
+*/
+SELECT CONVERT(date, GETDATE());   --2023-03-20
+SELECT CAST(GETDATE() AS DATE);	   --2023-03-20
