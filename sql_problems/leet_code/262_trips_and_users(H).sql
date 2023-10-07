@@ -57,3 +57,29 @@ WHERE t.request_at BETWEEN '2013-10-01' AND '2013-10-03'
 AND c.banned = 'No'
 AND d.banned = 'No'
 GROUP BY request_at;
+
+--Method2
+WITH unbanned AS (
+	SELECT *
+	FROM Users
+	WHERE banned = 'No'
+),
+trips_of_unbanned_users AS (
+	SELECT request_at, 
+		SUM(CASE WHEN status = 'cancelled_by_driver' 
+				   THEN 1.0
+				   ELSE 0.0
+				END
+			) cancelled_requests, 
+		COUNT(id) totoal_requests
+	FROM Trips AS t
+	INNER JOIN Users AS c
+	ON t.client_id = c.users_id
+	INNER JOIN Users AS d
+	ON t.driver_id = d.users_id
+  WHERE t.request_at BETWEEN '2013-10-01' AND '2013-10-03'
+	GROUP BY request_at	
+)
+SELECT request_at AS Day,
+	CAST(cancelled_requests/totoal_requests AS DECIMAL(10,2)) AS [Cancellation Rate]
+FROM trips_of_unbanned_users
